@@ -1,9 +1,9 @@
-﻿using Aspose.Cells;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Aspose.Cells;
 
 namespace Chitrich_1.Models
 {
@@ -54,7 +54,7 @@ namespace Chitrich_1.Models
                     peoples.Add(people);
                 }
             }
-            return peoples;
+            return peoples;            
         }
 
         public static void Print(List<People> peoples)
@@ -68,7 +68,7 @@ namespace Chitrich_1.Models
                     + people.Department);
             }
         }
-
+        
         public static List<People> SortByAge(List<People> peoples)
         {
             for (int i = 0; i < peoples.Count; i++)
@@ -107,12 +107,7 @@ namespace Chitrich_1.Models
                 worksheet.Cells[i + 1, 4].PutValue(peoples[i].Department);
             }
             workbook.Save("output.xlsx", SaveFormat.Xlsx);
-
-        }
-        public static void TestSave() //тестовий метод для перевірки зберігання
-        {
-            Workbook wb = new Workbook("generated_excel_data.xlsx");
-            wb.Save("output1.xlsx");
-        }
+        }    
     }
 }
+        
