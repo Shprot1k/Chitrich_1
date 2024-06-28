@@ -57,17 +57,62 @@ namespace Chitrich_1.Models
             return peoples;
         }
 
-        public static void Write(List<People> peoples)
-        {
-            
+        public static void Print(List<People> peoples)
+        {  
             foreach (People people in peoples)
             {
-                Console.WriteLine(people.ID + " " 
-                    + people.Name + " " 
-                    + people.Age + " " 
-                    + people.Salary + " "
+                Console.WriteLine(people.ID + "\t" 
+                    + people.Name + "\t" 
+                    + people.Age + "\t" 
+                    + people.Salary + "\t"
                     + people.Department);
             }
+        }
+
+        public static List<People> SortByAge(List<People> peoples)
+        {
+            for (int i = 0; i < peoples.Count; i++)
+            {
+                for (int j = 0; j < peoples.Count; j++)
+                {
+                    if (peoples[i].Age < peoples[j].Age)
+                    {
+                        var temp = peoples[i];
+                        peoples[i] = peoples[j];
+                        peoples[j] = temp;
+                    }
+                }
+            }
+            return peoples;
+        }
+
+        public static void Save(List<People> peoples) // мало б працювати, але нє
+        {
+            
+            Workbook workbook = new Workbook();
+            Worksheet worksheet = workbook.Worksheets[0];
+
+            worksheet.Cells[0, 0].PutValue("ID");
+            worksheet.Cells[0, 1].PutValue("Name");
+            worksheet.Cells[0, 2].PutValue("Age");
+            worksheet.Cells[0, 3].PutValue("Salary");
+            worksheet.Cells[0, 4].PutValue("Department");
+
+            for (int i = 0; i < peoples.Count; i++)
+            {
+                worksheet.Cells[i + 1, 0].PutValue(peoples[i].ID);
+                worksheet.Cells[i + 1, 1].PutValue(peoples[i].Name);
+                worksheet.Cells[i + 1, 2].PutValue(peoples[i].Age);
+                worksheet.Cells[i + 1, 3].PutValue(peoples[i].Salary);
+                worksheet.Cells[i + 1, 4].PutValue(peoples[i].Department);
+            }
+            workbook.Save("output.xlsx", SaveFormat.Xlsx);
+
+        }
+        public static void TestSave() //тестовий метод для перевірки зберігання
+        {
+            Workbook wb = new Workbook("generated_excel_data.xlsx");
+            wb.Save("output1.xlsx");
         }
     }
 }
