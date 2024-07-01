@@ -6,14 +6,18 @@ namespace Chitrich_1
     {
         static void Main(string[] args)
         {
-            
-            Console.WriteLine("");
-            var list_0 = People.Read();
-            People.Print(list_0);
+            /*
+            Console.Write("Name of the file to be read: ");
+            //var peoples_0 = PeopleBL.Read(Console.ReadLine());
+            var peoples_0 = PeopleBL.Read("generated_excel_data.xlsx");
+            PeopleBL.Print(peoples_0);
             Console.WriteLine("===========================================================");
-            var list_1 = People.SortByAge(list_0);
-            People.Print(list_1);
-            People.Save(list_1);
+            var peoples_1 = PeopleBL.SortByAge(peoples_0);
+            PeopleBL.Print(peoples_1);
+            PeopleBL.Save(peoples_1);
+            */
+            var peoples_0 = PeopleBL.Read("generated_excel_data.xlsx");
+            PeopleBL.Print(peoples_0);
         }
     }
 }
