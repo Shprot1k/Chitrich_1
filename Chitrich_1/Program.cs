@@ -1,6 +1,7 @@
 ﻿using Chitrich_1.Models;
+using Chitrich_1.Services;
 
-namespace Chitrich_1
+namespace Chitrich_1.Models
 {
     internal class Program
     {
@@ -11,7 +12,7 @@ namespace Chitrich_1
             while (choise != 0)
             {
                 Console.Write("Select an action\n"
-                    + "1 - Read file   generated_excel_data.xlsx\n"
+                    + "1 - Read file\n"
                     + "2 - Sort\n"
                     + "3 - Print\n"
                     + "4 - Save\n"
@@ -23,20 +24,21 @@ namespace Chitrich_1
                 switch (choise)
                 {
                     case 1: // Read file
+                        Console.WriteLine(@"C:\Users\taras\source\repos\Chitrich_1\Chitrich_1\Files\generated_excel_data.xlsx");
                         Console.Write("Name of the file to be read: ");
-                        p = PeopleBL.Read(Console.ReadLine());
+                        p = ExelServices.Read(Console.ReadLine());
                         Console.WriteLine("File read\n");
                         break;
                     case 2: // Sort
-                        p = PeopleBL.Sort(p);
+                        p = SharedServices.Sort(p);
                         Console.WriteLine("List sorted\n");
                         break;
                     case 3: // Print
-                        PeopleBL.Print(p);
+                        SharedServices.Print(p);
                         Console.WriteLine();
                         break;
                     case 4: // Save
-                        PeopleBL.Save(p);
+                        ExelServices.Save(p);
                         Console.WriteLine("File saved\n");
                         break;
                     case 5: // Clear console
