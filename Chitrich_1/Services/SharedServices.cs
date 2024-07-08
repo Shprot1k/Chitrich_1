@@ -10,7 +10,7 @@ namespace Chitrich_1.Services
 {
     internal class SharedServices
     {
-        public static void Print(List<People> peoples)
+        public static void PrintPeoples(List<People> peoples)
         {
             Console.WriteLine();
             foreach (People people in peoples)
@@ -18,6 +18,16 @@ namespace Chitrich_1.Services
                 Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", people.Id, people.Name, people.Age, people.Salary, people.Department);
             }
         }
+
+        public static void PrintCars(List<Car> cars)
+        {
+            Console.WriteLine();
+            foreach (Car car in cars)
+            {
+                Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", car.Brand, car.Model, car.Year, car.Price, car.Color);
+            }
+        }
+
         public static List<People> Sort(List<People> peoples)
         {
             Console.Write("\nSelect a sorting method:\n"

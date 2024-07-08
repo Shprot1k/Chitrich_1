@@ -13,7 +13,7 @@ namespace Chitrich_1.Services
 {
     class ExelServices
     {
-        public static List<T> Read<T>(string fileName) where T : People
+        public static List<T> Read<T>(string fileName) where T : class
         {
             List<People> peoples = new List<People>();
             using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
