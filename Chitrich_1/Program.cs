@@ -26,7 +26,7 @@ namespace Chitrich_1.Models
                     case 1: // Read file
                         Console.WriteLine(@"C:\Users\taras\source\repos\Chitrich_1\Chitrich_1\Files\generated_excel_data.xlsx");
                         Console.Write("Name of the file to be read: ");
-                        p = ExelServices.Read(Console.ReadLine());
+                        p = ExelServices.Read<People>(Console.ReadLine());
                         Console.WriteLine("File read\n");
                         break;
                     case 2: // Sort

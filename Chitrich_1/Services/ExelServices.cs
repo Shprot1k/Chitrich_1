@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chitrich_1.Models;
+using System.Reflection;
 
 namespace Chitrich_1.Services
 {
     class ExelServices
     {
-        public static List<People> Read(string fileName)
+        public static List<T> Read<T>(string fileName) where T : People
         {
             List<People> peoples = new List<People>();
             using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
@@ -25,50 +26,30 @@ namespace Chitrich_1.Services
                 }
                 WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
                 SheetData sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
+
+                ConstructorInfo constructor = typeof(T).GetConstructor(new[] { typeof(List<string>) });
+
                 int rowNum = 0;
+                List<T> ret = new List<T>();
                 foreach (Row row in sheetData.Elements<Row>())
                 {
-                    People p = new People();
-                    int cellNum = 0;
+                    T obj;
                     if (rowNum > 0)
                     {
+                        List<string> fields = new List<string>();
                         foreach (Cell cell in row.Elements<Cell>())
                         {
-                            string cellValue = GetCellValue(spreadsheetDocument, cell);
-                            switch (cellNum)
-                            {
-                                case 0:
-                                    p.Id = int.Parse(cellValue);
-                                    cellNum++;
-                                    break;
-                                case 1:
-                                    p.Name = cellValue;
-                                    cellNum++;
-                                    break;
-                                case 2:
-                                    p.Age = int.Parse(cellValue);
-                                    cellNum++;
-                                    break;
-                                case 3:
-                                    p.Salary = int.Parse(cellValue);
-                                    cellNum++;
-                                    break;
-                                case 4:
-                                    p.Department = cellValue;
-                                    cellNum++;
-                                    break;
-                                default:
-                                    cellNum++; break;
-                            }
+                            fields.Add(GetCellValue(spreadsheetDocument, cell));
                         }
-                        peoples.Add(p);
+                        obj = (T)constructor.Invoke(new object[] { fields });
+                        ret.Add(obj);
                     }
                     rowNum++;
                 }
+                return ret;
             }
-            return peoples;
         }
-        
+
         public static void Save(List<People> peoples)
         {
             using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Create(@"C:\Users\taras\source\repos\Chitrich_1\Chitrich_1\Files\output.xlsx", SpreadsheetDocumentType.Workbook))
