@@ -22,14 +22,17 @@ namespace Chitrich_1.Models
                     + "7 - Print Cars\n"
                     + "0 - Exit\n"
                     + "Your choise: ");
-                choise = int.Parse(Console.ReadLine());
+                choise = int.Parse(Console.ReadLine() ?? "0");
 
                 switch (choise)
                 {
                     case 1: // Read peoples
                         Console.WriteLine(@"C:\Users\taras\source\repos\Chitrich_1\Chitrich_1\Files\generated_excel_data.xlsx");
+/*
+// Присобачити дію на неправильну силку
+*/
                         Console.Write("Name of the file to be read: ");
-                        p = ExelServices.Read<People>(Console.ReadLine());
+                        p = ExelServices.Read<People>(Console.ReadLine() ?? "");
                         Console.WriteLine("File read\n");
                         break;
                     case 2: // Sort
@@ -50,7 +53,7 @@ namespace Chitrich_1.Models
                     case 6: // Read cars 
                         Console.WriteLine(@"C:\Users\taras\source\repos\Chitrich_1\Chitrich_1\Files\CarData.xlsx");
                         Console.Write("Name of the file to be read: ");
-                        c = ExelServices.Read<Car>(Console.ReadLine());
+                        c = ExelServices.Read<Car>(Console.ReadLine() ?? "");
                         Console.WriteLine("File read\n");
                         break;
                     case 7: // Print cars
@@ -60,6 +63,7 @@ namespace Chitrich_1.Models
                     case 0: // Exit
                         break;
                     default:
+                        Console.WriteLine("Incorrect command");
                         break;
                 }
             }

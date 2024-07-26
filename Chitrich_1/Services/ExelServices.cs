@@ -16,38 +16,48 @@ namespace Chitrich_1.Services
         public static List<T> Read<T>(string fileName) where T : class
         {
             List<People> peoples = new List<People>();
-            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            if (SpreadsheetDocument.Open(fileName, false) == null)
             {
-                WorkbookPart workbookPart = spreadsheetDocument.WorkbookPart;
-                Sheet sheet = workbookPart.Workbook.Descendants<Sheet>().FirstOrDefault();
-                if (sheet == null)
-                {
-                    throw new Exception("Sheet not found");
-                }
-                WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id);
-                SheetData sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
-
-                ConstructorInfo constructor = typeof(T).GetConstructor(new[] { typeof(List<string>) });
-
-                int rowNum = 0;
-                List<T> ret = new List<T>();
-                foreach (Row row in sheetData.Elements<Row>())
-                {
-                    T obj;
-                    if (rowNum > 0)
-                    {
-                        List<string> fields = new List<string>();
-                        foreach (Cell cell in row.Elements<Cell>())
-                        {
-                            fields.Add(GetCellValue(spreadsheetDocument, cell));
-                        }
-                        obj = (T)constructor.Invoke(new object[] { fields });
-                        ret.Add(obj);
-                    }
-                    rowNum++;
-                }
-                return ret;
+                throw new Exception("spreadsheetDocument is null");
             }
+                using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+                {
+                    if (spreadsheetDocument.WorkbookPart == null)
+                    {
+                        throw new Exception();
+                    }
+                    WorkbookPart workbookPart = spreadsheetDocument.WorkbookPart;
+                    
+                    Sheet sheet = workbookPart.Workbook.Descendants<Sheet>().FirstOrDefault()!;
+                    if (sheet.Id == null)
+                    {
+                        throw new Exception("Sheet not found");
+                    }
+                    WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id!);
+                    SheetData sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
+
+                    ConstructorInfo constructor = typeof(T).GetConstructor(new[] { typeof(List<string>) })!;
+
+                    int rowNum = 0;
+                    List<T> ret = new List<T>();
+                    foreach (Row row in sheetData.Elements<Row>())
+                    {
+                        T obj;
+                        if (rowNum > 0 && constructor != null)
+                        {
+                            List<string> fields = new List<string>();
+                            foreach (Cell cell in row.Elements<Cell>())
+                            {
+                                fields.Add(GetCellValue(spreadsheetDocument, cell));
+                            }
+                            obj = (T)constructor.Invoke(new object[] { fields });
+                            ret.Add(obj);
+                        }
+                        rowNum++;
+                    }
+                    return ret;
+                }
+            
         }
 
         public static void Save(List<People> peoples)
@@ -58,7 +68,7 @@ namespace Chitrich_1.Services
                 workbookPart.Workbook = new Workbook();
                 WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
                 worksheetPart.Worksheet = new Worksheet(new SheetData());
-                Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.AppendChild(new Sheets());
+                Sheets sheets = spreadsheetDocument.WorkbookPart!.Workbook.AppendChild(new Sheets());
                 Sheet sheet = new Sheet()
                 {
                     Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
@@ -66,7 +76,11 @@ namespace Chitrich_1.Services
                     Name = "Sheet1"
                 };
                 sheets.Append(sheet);
-                SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+                SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>()!;
+                if (sheetData == null)
+                {
+                    throw new Exception();
+                }
 
                 int choise = 1;
                 List<int> choises = new List<int>();
@@ -81,7 +95,7 @@ namespace Chitrich_1.Services
                         + "5 - Department\n"
                         + "Else - exit\n"
                         + "Your choise: ");
-                    choise = int.Parse(Console.ReadLine());
+                    choise = int.Parse(Console.ReadLine() ?? "0");
                     Console.WriteLine();
                     if (choise >= 1 && choise <= 5)
                     {
@@ -101,19 +115,19 @@ namespace Chitrich_1.Services
                     switch (chois)
                     {
                         case 1:
-                            headerRow.Append(CreateTextCell(CellNum(i), "Id"));
+                            headerRow.Append(CreateTextCell("Id"));
                             break;
                         case 2:
-                            headerRow.Append(CreateTextCell(CellNum(i), "Name"));
+                            headerRow.Append(CreateTextCell("Name"));
                             break;
                         case 3:
-                            headerRow.Append(CreateTextCell(CellNum(i), "Age"));
+                            headerRow.Append(CreateTextCell("Age"));
                             break;
                         case 4:
-                            headerRow.Append(CreateTextCell(CellNum(i), "Salary"));
+                            headerRow.Append(CreateTextCell("Salary"));
                             break;
                         case 5:
-                            headerRow.Append(CreateTextCell(CellNum(i), "Department"));
+                            headerRow.Append(CreateTextCell("Department"));
                             break;
                     }
                     i++;
@@ -129,20 +143,34 @@ namespace Chitrich_1.Services
                         switch (chois)
                         {
                             case 1:
-                                dataRow.Append(CreateIntCell(null, people.Id));
+                                dataRow.Append(CreateIntCell(people.Id));
                                 break;
                             case 2:
-                                dataRow.Append(CreateTextCell(null, people.Name));
-                                break;
+                                if (people.Name != null)
+                                {
+                                    dataRow.Append(CreateTextCell(people.Name));
+                                    break;
+                                }
+                                else
+                                {
+                                    throw new Exception();
+                                }
                             case 3:
-                                dataRow.Append(CreateIntCell(null, people.Age));
+                                dataRow.Append(CreateIntCell(people.Age));
                                 break;
                             case 4:
-                                dataRow.Append(CreateIntCell(null, people.Salary));
+                                dataRow.Append(CreateIntCell(people.Salary));
                                 break;
                             case 5:
-                                dataRow.Append(CreateTextCell(null, people.Department));
-                                break;
+                                if (people.Department != null)
+                                {
+                                    dataRow.Append(CreateTextCell(people.Department));
+                                    break;
+                                }else
+                                {
+                                    throw new Exception();
+                                }
+                                
                         }
                     }
                     sheetData.AppendChild(dataRow);
@@ -153,55 +181,50 @@ namespace Chitrich_1.Services
             }
         }
 
-        private static Cell CreateTextCell(string cellReference, string cellValue)
+        private static Cell CreateTextCell(string cellValue)
         {
             Cell cell = new Cell()
             {
                 DataType = CellValues.String,
                 CellValue = new CellValue(cellValue)
             };
-
-            if (!string.IsNullOrEmpty(cellReference))
-            {
-                cell.CellReference = cellReference;
-            }
-
             return cell;
         }
 
-        private static Cell CreateIntCell(string cellReference, int cellValue)
+        private static Cell CreateIntCell( int cellValue)
         {
             Cell cell = new Cell()
             {
                 DataType = CellValues.Number,
                 CellValue = new CellValue(cellValue)
             };
-
-            if (!string.IsNullOrEmpty(cellReference))
-            {
-                cell.CellReference = cellReference;
-            }
-
             return cell;
         }
 
         private static string GetCellValue(SpreadsheetDocument document, Cell cell)
         {
-            string value = cell.CellValue.InnerText;
+            if (document.WorkbookPart != null && document.WorkbookPart.SharedStringTablePart != null && cell.CellValue != null)
+            {
+                string value = cell.CellValue.InnerText;
 
-            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
+                if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
+                {
+                    SharedStringTablePart stringTable = document.WorkbookPart.SharedStringTablePart;
+                    return stringTable.SharedStringTable.ElementAt(int.Parse(value)).InnerText;
+                }
+                else if (cell.DataType != null && cell.DataType.Value == CellValues.Boolean)
+                {
+                    return value == "0" ? "FALSE" : "TRUE";
+                }
+                else
+                {
+                    return value;
+                }
+            }else
             {
-                SharedStringTablePart stringTable = document.WorkbookPart.SharedStringTablePart;
-                return stringTable.SharedStringTable.ElementAt(int.Parse(value)).InnerText;
+                throw new Exception();
             }
-            else if (cell.DataType != null && cell.DataType.Value == CellValues.Boolean)
-            {
-                return value == "0" ? "FALSE" : "TRUE";
-            }
-            else
-            {
-                return value;
-            }
+            
         }
 
         private static string CellNum(int i)

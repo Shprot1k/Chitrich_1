@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chitrich_1.Models;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 
 namespace Chitrich_1.Services
@@ -38,7 +40,7 @@ namespace Chitrich_1.Services
                 + "5 - By Department (dont work)\n"
                 + "0 - Don't sort\n"
                 + "Your choice: ");
-            int sortOption = int.Parse(Console.ReadLine());
+            int sortOption = int.Parse(Console.ReadLine() ?? "0");
             switch (sortOption)
             {
                 case 0: // Don't sort
@@ -100,5 +102,6 @@ namespace Chitrich_1.Services
 
             }
         }
+
     }
 }
