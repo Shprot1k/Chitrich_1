@@ -57,7 +57,7 @@ namespace Chitrich_1.Models
                         Id = int.Parse(cell.InnerText);
                         break;
                     case 1:
-                        Name = Services.ExelServices.GetCellValue(spreadsheetDocument, cell);
+                        Name = GetCellValue(spreadsheetDocument, cell);
                         break;
                     case 2:
                         Age = int.Parse(cell.InnerText);
@@ -66,7 +66,7 @@ namespace Chitrich_1.Models
                         Salary = int.Parse(cell.InnerText);
                         break;
                     case 4:
-                        Department = Services.ExelServices.GetCellValue(spreadsheetDocument, cell);
+                        Department = GetCellValue(spreadsheetDocument, cell);
                         break;
                     default:
                         break;

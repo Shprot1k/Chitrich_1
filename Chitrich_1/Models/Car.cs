@@ -29,10 +29,10 @@ namespace Chitrich_1.Models
                 switch (i)
                 {
                     case 0:
-                        Brand = Services.ExelServices.GetCellValue(spreadsheetDocument, cell);
+                        Brand = GetCellValue(spreadsheetDocument, cell);
                         break;
                     case 1:
-                        Model = Services.ExelServices.GetCellValue(spreadsheetDocument, cell);
+                        Model = GetCellValue(spreadsheetDocument, cell);
                         break;
                     case 2:
                         Year = int.Parse(cell.InnerText);
@@ -41,7 +41,7 @@ namespace Chitrich_1.Models
                         Price = int.Parse(cell.InnerText);
                         break;
                     case 4:
-                        Color = Services.ExelServices.GetCellValue(spreadsheetDocument, cell);
+                        Color = GetCellValue(spreadsheetDocument, cell);
                         break;
                     default:
                         break;
