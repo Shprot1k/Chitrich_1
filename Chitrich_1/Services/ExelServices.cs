@@ -8,56 +8,52 @@ using System.Text;
 using System.Threading.Tasks;
 using Chitrich_1.Models;
 using System.Reflection;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 
 namespace Chitrich_1.Services
 {
     class ExelServices
     {
-        public static List<T> Read<T>(string fileName) where T : class
+        public static List<T> Read<T>(string filePath) where T : BaseClass, new()
         {
             List<People> peoples = new List<People>();
-            if (SpreadsheetDocument.Open(fileName, false) == null)
+            if (SpreadsheetDocument.Open(filePath, false) == null)
             {
                 throw new Exception("spreadsheetDocument is null");
             }
-                using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(filePath, false))
+            {
+                if (spreadsheetDocument.WorkbookPart == null)
                 {
-                    if (spreadsheetDocument.WorkbookPart == null)
-                    {
-                        throw new Exception();
-                    }
-                    WorkbookPart workbookPart = spreadsheetDocument.WorkbookPart;
-                    
-                    Sheet sheet = workbookPart.Workbook.Descendants<Sheet>().FirstOrDefault()!;
-                    if (sheet.Id == null)
-                    {
-                        throw new Exception("Sheet not found");
-                    }
-                    WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id!);
-                    SheetData sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
-
-                    ConstructorInfo constructor = typeof(T).GetConstructor(new[] { typeof(List<string>) })!;
-
-                    int rowNum = 0;
-                    List<T> ret = new List<T>();
-                    foreach (Row row in sheetData.Elements<Row>())
-                    {
-                        T obj;
-                        if (rowNum > 0 && constructor != null)
-                        {
-                            List<string> fields = new List<string>();
-                            foreach (Cell cell in row.Elements<Cell>())
-                            {
-                                fields.Add(GetCellValue(spreadsheetDocument, cell));
-                            }
-                            obj = (T)constructor.Invoke(new object[] { fields });
-                            ret.Add(obj);
-                        }
-                        rowNum++;
-                    }
-                    return ret;
+                    throw new Exception();
                 }
-            
+                WorkbookPart workbookPart = spreadsheetDocument.WorkbookPart;
+
+                Sheet sheet = workbookPart.Workbook.Descendants<Sheet>().FirstOrDefault()!;
+                if (sheet.Id == null)
+                {
+                    throw new Exception("Sheet not found");
+                }
+                WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id!);
+                SheetData sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
+
+                ConstructorInfo constructor = typeof(T).GetConstructor(new[] { typeof(List<string>) })!;
+
+                int rowNum = 0;
+                List<T> returnedList = new List<T>();
+                foreach (Row row in sheetData.Elements<Row>())
+                {
+                    if (rowNum > 0 && constructor != null)
+                    {
+                        var returnedObj = new T();
+                        returnedObj.OdjFromRow(row, spreadsheetDocument);
+
+                        returnedList.Add(returnedObj);
+                    }
+                    rowNum++;
+                }
+                return returnedList;
+            }
         }
 
         public static void Save(List<People> peoples)
@@ -201,7 +197,7 @@ namespace Chitrich_1.Services
             return cell;
         }
 
-        private static string GetCellValue(SpreadsheetDocument document, Cell cell)
+        public static string GetCellValue(SpreadsheetDocument document, Cell cell)
         {
             if (document.WorkbookPart != null && document.WorkbookPart.SharedStringTablePart != null && cell.CellValue != null)
             {
@@ -220,30 +216,12 @@ namespace Chitrich_1.Services
                 {
                     return value;
                 }
-            }else
+            }
+            else
             {
                 throw new Exception();
             }
-            
-        }
 
-        private static string CellNum(int i)
-        {
-            switch (i)
-            {
-                case 1:
-                    return "A1";
-                case 2:
-                    return "B1";
-                case 3:
-                    return "C1";
-                case 4:
-                    return "D1";
-                case 5:
-                    return "E1";
-                default:
-                    return "Eror";
-            }
         }
     }
 }

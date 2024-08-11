@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Chitrich_1.Models
 {
-    internal class Car
+    internal class Car : BaseClass
     {
         public string? Brand { get; set; }
         public string? Model { get; set; }
@@ -19,31 +20,35 @@ namespace Chitrich_1.Models
         public string? Color { get; set; }
 
         public Car() { }
-        public Car(List<string> fields)
+        public override Car OdjFromRow(Row row, SpreadsheetDocument spreadsheetDocument)
         {
-            for (int i = 0; i < fields.Count; i++)
+            Car car = new Car();
+            int i = 0;
+            foreach (Cell cell in row.Elements<Cell>())
             {
                 switch (i)
                 {
                     case 0:
-                        Brand = fields[i];
+                        Brand = Services.ExelServices.GetCellValue(spreadsheetDocument, cell);
                         break;
                     case 1:
-                        Model = fields[i];
+                        Model = Services.ExelServices.GetCellValue(spreadsheetDocument, cell);
                         break;
                     case 2:
-                        Year = int.Parse(fields[i]);
+                        Year = int.Parse(cell.InnerText);
                         break;
                     case 3:
-                        Price = int.Parse(fields[i]);
+                        Price = int.Parse(cell.InnerText);
                         break;
                     case 4:
-                        Color = fields[i];
+                        Color = Services.ExelServices.GetCellValue(spreadsheetDocument, cell);
                         break;
                     default:
                         break;
                 }
+                i++;
             }
+            return car;
         }
     }
 }
