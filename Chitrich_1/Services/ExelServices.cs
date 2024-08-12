@@ -37,13 +37,11 @@ namespace Chitrich_1.Services
                 WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheet.Id!);
                 SheetData sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
 
-                ConstructorInfo constructor = typeof(T).GetConstructor(new[] { typeof(List<string>) })!;
-
                 int rowNum = 0;
                 List<T> returnedList = new List<T>();
                 foreach (Row row in sheetData.Elements<Row>())
                 {
-                    if (rowNum > 0 && constructor != null)
+                    if (rowNum > 0)
                     {
                         var returnedObj = new T();
                         returnedObj.OdjFromRow(row, spreadsheetDocument);

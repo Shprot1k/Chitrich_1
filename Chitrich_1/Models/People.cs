@@ -16,34 +16,6 @@ namespace Chitrich_1.Models
         public int Salary { get; set; }
         public string? Department { get; set; } 
         public People() { }
-        
-        public People(List<string> fields)
-        {
-            for (int i = 0; i < fields.Count; i++)
-            {
-                switch (i)
-                {
-                    case 0:
-                        Id = int.Parse(fields[i]);
-                        break;
-                    case 1:
-                        Name = fields[i];
-                        break;
-                    case 2:
-                        Age = int.Parse(fields[i]);
-                        break;
-                    case 3:
-                        Salary = int.Parse(fields[i]);
-                        break;
-                    case 4:
-                        Department = fields[i];
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-        }
 
         public override People OdjFromRow(Row row, SpreadsheetDocument spreadsheetDocument)
         {
